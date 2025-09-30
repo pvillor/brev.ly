@@ -9,6 +9,7 @@ import { ConflictException } from "@/app/functions/errors/conflict";
 import { NotFoundException } from "@/app/functions/errors/not-found";
 import { deleteLinkRoute } from "./routes/delete-link";
 import { getLinksRoute } from "./routes/get-links";
+import { getOriginalUrlByShortUrlSuffixRoute } from "./routes/get-original-url-by-short-url-suffix";
 
 const app = fastify()
 
@@ -62,6 +63,7 @@ app.register(fastifySwaggerUi, {
 app.register(createLinkRoute)
 app.register(deleteLinkRoute)
 app.register(getLinksRoute)
+app.register(getOriginalUrlByShortUrlSuffixRoute)
 
 app.listen({ port: env.PORT }).then(() => {
   console.log('🚀 Link start!')

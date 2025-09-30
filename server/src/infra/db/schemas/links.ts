@@ -6,7 +6,7 @@ export const links = pgTable('links', {
     .primaryKey()
     .$defaultFn(() => uuidv7()),
   originalUrl: text('original_url').notNull(),
-  shortUrl: text('short_url').notNull().unique(),
+  shortUrlSuffix: text('short_url_suffix').notNull().unique(),
   accessCount: integer('access_count').default(0),
   createdAt: timestamp('created_at', { withTimezone: true })
     .defaultNow()

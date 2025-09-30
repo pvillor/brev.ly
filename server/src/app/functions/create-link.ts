@@ -6,25 +6,25 @@ import { ConflictException } from "./errors/conflict";
 
 const createLinkInput = z.object({
   originalUrl: z.url(),
-  shortUrl: z.url(),
+  shortUrlSuffix: z.string(),
 })
 
 type CreateLinkInput = z.input<typeof createLinkInput>
 
 export async function createLink(input: CreateLinkInput) {
-  const { originalUrl, shortUrl } = createLinkInput.parse(input)
+  const { originalUrl, shortUrlSuffix } = createLinkInput.parse(input)
 
-  const [shortUrlAlreadyExists] = await db.select()
+  const [shortUrlSuffixAlreadyExists] = await db.select()
     .from(schema.links)
-    .where(eq(schema.links.shortUrl, shortUrl))
+    .where(eq(schema.links.shortUrlSuffix, shortUrlSuffix))
 
-  if (shortUrlAlreadyExists) {
+  if (shortUrlSuffixAlreadyExists) {
     throw new ConflictException('Essa URL encurtada já existe.')
   }
 
   const [link] = await db.insert(schema.links).values({
     originalUrl,
-    shortUrl
+    shortUrlSuffix
   }).returning()
 
   return ({ linkId: link.id })

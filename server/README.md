@@ -4,7 +4,7 @@
     - [X]  Não deve ser possível criar um link com URL encurtada mal formatada
     - [X]  Não deve ser possível criar um link com URL encurtada já existente
 - [X]  Deve ser possível deletar um link
-- [ ]  Deve ser possível obter a URL original por meio de uma URL encurtada
+- [X]  Deve ser possível obter a URL original por meio de uma URL encurtada
 - [X]  Deve ser possível listar todas as URL’s cadastradas
 - [ ]  Deve ser possível incrementar a quantidade de acessos de um link
 - [ ]  Deve ser possível exportar os links criados em um CSV

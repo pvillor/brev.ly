@@ -7,15 +7,15 @@ export const createLinkRoute: FastifyPluginAsyncZod = async app => {
     schema: {
       body: z.object({
         originalUrl: z.url(),
-        shortUrl: z.url(),
+        shortUrlSuffix: z.string(),
       })
     }
   }, async (request, reply) => {
-    const { originalUrl, shortUrl } = request.body
+    const { originalUrl, shortUrlSuffix } = request.body
 
     const { linkId } = await createLink({
       originalUrl,
-      shortUrl
+      shortUrlSuffix
     })
 
     return reply.status(201).send({ linkId })
