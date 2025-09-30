@@ -6,6 +6,8 @@ import fastifySwagger from "@fastify/swagger";
 import fastifySwaggerUi from "@fastify/swagger-ui";
 import { createLinkRoute } from "./routes/create-link";
 import { ConflictException } from "@/app/functions/errors/conflict";
+import { NotFoundException } from "@/app/functions/errors/not-found";
+import { deleteLinkRoute } from "./routes/delete-link";
 
 const app = fastify()
 
@@ -17,6 +19,12 @@ app.setErrorHandler((error, request, reply) => {
     return reply.status(400).send({
       message: 'Validation error',
       issues: error.validation,
+    })
+  }
+
+  if (error instanceof NotFoundException) {
+    return reply.status(404).send({
+      message: error.message
     })
   }
 
@@ -51,6 +59,7 @@ app.register(fastifySwaggerUi, {
 })
 
 app.register(createLinkRoute)
+app.register(deleteLinkRoute)
 
 app.listen({ port: env.PORT }).then(() => {
   console.log('🚀 Link start!')

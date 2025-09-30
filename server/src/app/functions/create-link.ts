@@ -18,9 +18,9 @@ export async function createLink(input: CreateLinkInput) {
     .from(schema.links)
     .where(eq(schema.links.shortUrl, shortUrl))
 
-    if (shortUrlAlreadyExists) {
-      throw new ConflictException('Essa URL encurtada já existe.')
-    }
+  if (shortUrlAlreadyExists) {
+    throw new ConflictException('Essa URL encurtada já existe.')
+  }
 
   const [link] = await db.insert(schema.links).values({
     originalUrl,
