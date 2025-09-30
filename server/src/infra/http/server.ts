@@ -5,6 +5,7 @@ import { hasZodFastifySchemaValidationErrors, jsonSchemaTransform, serializerCom
 import fastifySwagger from "@fastify/swagger";
 import fastifySwaggerUi from "@fastify/swagger-ui";
 import { createLinkRoute } from "./routes/create-link";
+import { ConflictException } from "@/app/functions/errors/conflict";
 
 const app = fastify()
 
@@ -16,6 +17,12 @@ app.setErrorHandler((error, request, reply) => {
     return reply.status(400).send({
       message: 'Validation error',
       issues: error.validation,
+    })
+  }
+
+  if (error instanceof ConflictException) {
+    return reply.status(409).send({
+      message: error.message
     })
   }
 
