@@ -21,5 +21,11 @@ export async function getOriginalUrlByShortUrlSuffix(input: GetOriginalUrlByShor
     throw new NotFoundException('Link não encontrado.')
   }
 
+  await db.update(schema.links)
+    .set({
+      accessCount: link.accessCount + 1
+    })
+    .where(eq(schema.links.id, link.id));
+
   return link.originalUrl
 }
