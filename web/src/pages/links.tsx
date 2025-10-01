@@ -127,6 +127,7 @@ export function Links() {
           {!!links && links.map(link => (
             <Link
               key={link.id}
+              id={link.id}
               originalUrl={link.originalUrl} 
               shortUrlSuffix={link.shortUrlSuffix} 
               accessCount={link.accessCount} 
