@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form'
-import logo from '../../public/logo.png'
+import logo from '../assets/logo.png'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { createLink, createLinkInput, type CreateLinkInput } from '../http/create-link'
 import { useMutation, useQuery } from '@tanstack/react-query'

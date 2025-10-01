@@ -52,7 +52,7 @@ export function Link({ id, originalUrl, shortUrlSuffix, accessCount }: LinkProps
     <div className="border-t border-gray-200">
       <div className="flex items-center gap-4 mt-3 flex-wrap">
         <div className="flex flex-col gap-1 min-w-0 flex-1">
-          <p className="text-blue-base text-sm font-semibold leading-[18px] truncate">{shortUrl}</p>
+          <a href={shortUrl} className="text-blue-base text-sm font-semibold leading-[18px] truncate" target="_blank">{shortUrl}</a>
 
           <span className="text-gray-500 text-xs truncate">{originalUrl}</span>
         </div>
