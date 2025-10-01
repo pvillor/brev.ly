@@ -5,12 +5,14 @@ import { createLink, createLinkInput, type CreateLinkInput } from '../http/creat
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import type { AxiosError } from 'axios'
-import { DownloadSimpleIcon, WarningIcon } from '@phosphor-icons/react'
+import { DownloadSimpleIcon, LinkIcon, WarningIcon } from '@phosphor-icons/react'
 import { twMerge } from 'tailwind-merge'
 import { getLinks } from '../http/get-links'
 import { Link } from '../components/link'
 import { exportLinks } from '../http/export-links'
 import { downloadUrl } from '../utils/download-url'
+import { queryClient } from '../lib/react-query'
+import { motion } from 'framer-motion'
 
 export function Links() {
   const { register, handleSubmit, reset, watch, formState: { errors } } = useForm<CreateLinkInput>({
@@ -20,6 +22,8 @@ export function Links() {
   const { mutateAsync: createLinkFn, isPending: isCreatingLink } = useMutation({
     mutationFn: createLink,
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['links'] })
+
       toast.success('Link criado com sucesso!')
     },
     onError: (error: AxiosError) => {
@@ -33,7 +37,7 @@ export function Links() {
     }
   })
 
-  const { data: links } = useQuery({
+  const { data: links, isFetching } = useQuery({
     queryKey: ['links'],
     queryFn: getLinks
   })
@@ -113,27 +117,49 @@ export function Links() {
         </button>
       </form>
 
-      <div className='bg-gray-100 rounded-lg flex flex-col gap-4 p-6 w-full'>
+      <div
+        className="bg-gray-100 rounded-lg flex flex-col gap-4 p-6 w-full relative"
+      >
+        {isFetching && (
+          <motion.div
+            className="absolute top-0 left-0 h-1 bg-blue-dark rounded-tr rounded-tl w-1/4"
+            initial={{ x: '0%' }}
+            animate={{ x: '300%' }}
+            transition={{ duration: 1, repeat: Infinity, repeatType: 'loop', ease: 'easeInOut' }}
+          />
+        )}
+
         <div className='flex justify-between items-center'>
           <h1 className='text-lg font-bold leading-6'>Meus links</h1>
-
-          <button className='bg-gray-200 text-gray-500 text-xs font-semibold leading-4 rounded-sm p-2 flex items-center gap-1.5 disabled:opacity-50' disabled={isExportingLinks} onClick={handleExportLinks}>
+          
+          <button
+            className='bg-gray-200 text-gray-500 text-xs font-semibold leading-4 rounded-sm p-2 flex items-center gap-1.5 disabled:opacity-50'
+            disabled={isExportingLinks || links?.length === 0}
+            onClick={handleExportLinks}
+          >
             <DownloadSimpleIcon size={16} className='text-gray-600' />
             Baixar CSV
           </button>
         </div>
 
-        <div className='space-y-3'>
-          {!!links && links.map(link => (
-            <Link
-              key={link.id}
-              id={link.id}
-              originalUrl={link.originalUrl} 
-              shortUrlSuffix={link.shortUrlSuffix} 
-              accessCount={link.accessCount} 
-            />
-          ))}
-        </div>
+        {(!!links && links.length > 0) ? (
+          <div className='space-y-3'>
+            {links.map(link => (
+              <Link
+                key={link.id}
+                id={link.id}
+                originalUrl={link.originalUrl} 
+                shortUrlSuffix={link.shortUrlSuffix} 
+                accessCount={link.accessCount} 
+              />
+            ))}
+          </div>
+        ) : (
+          <div className='border-t border-gray-200 text-gray-400 flex flex-col justify-center items-center gap-3 py-4'>
+            <LinkIcon size={32} />
+            <h3 className='uppercase font-semibold text-xxs text-gray-500'>ainda não existem links cadastrados</h3>
+          </div>
+        )}
       </div>
     </div>
   )
