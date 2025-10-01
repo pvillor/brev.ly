@@ -5,6 +5,8 @@ import { createLink, createLinkInput, type CreateLinkInput } from '../http/creat
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import type { AxiosError } from 'axios'
+import { WarningIcon } from '@phosphor-icons/react'
+import { twMerge } from 'tailwind-merge'
 
 export function Links() {
   const { register, handleSubmit, reset, watch, formState: { errors } } = useForm<CreateLinkInput>({
@@ -48,19 +50,41 @@ export function Links() {
         <h1 className='text-lg font-bold leading-6'>Novo link</h1>
 
         <div className='flex flex-col gap-4'>
-          <div className='flex flex-col gap-2 text-gray-500 focus-within:text-blue-base focus-within:font-semibold'>
+          <div className={twMerge('flex flex-col gap-2 text-gray-500 focus-within:text-blue-base focus-within:font-semibold', !!errors.originalUrl && 'text-danger font-semibold')}>
             <label className='uppercase text-xxs leading-3.5' htmlFor='originalUrl'>Link original</label>
 
-            <input placeholder='www.exemplo.com.br' className='rounded-lg px-4 py-[15px] border border-gray-300 text-gray-600 text-sm caret-blue-base placeholder:text-sm placeholder:text-gray-400 placeholder:leading-[18px] outline-none focus:border-blue-base focus:border-2' {...register('originalUrl')} />
+            <div className='flex flex-col gap-2'>
+              <input
+                placeholder='www.exemplo.com.br' 
+                className={twMerge('rounded-lg px-4 py-[15px] border border-gray-300 text-gray-600 text-sm caret-blue-base placeholder:text-sm placeholder:text-gray-400 placeholder:leading-[18px] outline-none focus:border-blue-base focus:border-2', !!errors.originalUrl && 'border-danger border-2')} 
+                {...register('originalUrl')} 
+              />
+
+              {!!errors.originalUrl && (
+                <span className='text-gray-500 text-xs leading-4 font-normal flex gap-2'>
+                  <WarningIcon size={16} className='text-danger' />
+                  {errors.originalUrl.message}
+                </span>
+              )}
+            </div>
           </div>
 
           <div className='flex flex-col gap-2 text-gray-500 focus-within:text-blue-base focus-within:font-semibold'>
             <label className='uppercase text-xxs leading-3.5' htmlFor='shortUrlSuffix'>Link encurtado</label>
 
-            <div className='flex rounded-lg px-4 py-[15px] border border-gray-300 focus-within:border-blue-base focus-within:border-2'>
-              <span className='text-sm text-gray-400 leading-[18px]'>brev.ly/</span>
+            <div className='flex flex-col gap-2'>
+              <div className='flex rounded-lg px-4 py-[15px] border border-gray-300 focus-within:border-blue-base focus-within:border-2'>
+                <span className='text-sm text-gray-400 leading-[18px]'>brev.ly/</span>
 
-              <input className='flex-1 text-gray-600 text-sm caret-blue-base leading-[18px] outline-none' {...register('shortUrlSuffix')} />
+                <input className='flex-1 text-gray-600 text-sm caret-blue-base leading-[18px] outline-none' {...register('shortUrlSuffix')} />         
+              </div>
+              
+              {!!errors.shortUrlSuffix && (
+                <span className='text-gray-500 text-xs leading-4 font-normal flex gap-2'>
+                  <WarningIcon size={16} className='text-danger' />
+                  {errors.shortUrlSuffix.message}
+                </span>
+              )}   
             </div>
           </div>
         </div>

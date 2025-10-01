@@ -6,7 +6,8 @@ import { ConflictException } from "./errors/conflict";
 
 const createLinkInput = z.object({
   originalUrl: z.url(),
-  shortUrlSuffix: z.string(),
+  shortUrlSuffix: z.string()
+    .regex(/^[a-zA-Z0-9-]+$/),
 })
 
 type CreateLinkInput = z.input<typeof createLinkInput>
