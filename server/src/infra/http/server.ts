@@ -10,6 +10,7 @@ import { NotFoundException } from "@/app/functions/errors/not-found";
 import { deleteLinkRoute } from "./routes/delete-link";
 import { getLinksRoute } from "./routes/get-links";
 import { getOriginalUrlByShortUrlSuffixRoute } from "./routes/get-original-url-by-short-url-suffix";
+import { exportLinksRoute } from "./routes/export-links";
 
 const app = fastify()
 
@@ -64,6 +65,7 @@ app.register(createLinkRoute)
 app.register(deleteLinkRoute)
 app.register(getLinksRoute)
 app.register(getOriginalUrlByShortUrlSuffixRoute)
+app.register(exportLinksRoute)
 
 app.listen({ port: env.PORT }).then(() => {
   console.log('🚀 Link start!')
