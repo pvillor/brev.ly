@@ -2,18 +2,22 @@ import { useForm } from 'react-hook-form'
 import logo from '../../public/logo.png'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { createLink, createLinkInput, type CreateLinkInput } from '../http/create-link'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import type { AxiosError } from 'axios'
-import { WarningIcon } from '@phosphor-icons/react'
+import { DownloadSimpleIcon, WarningIcon } from '@phosphor-icons/react'
 import { twMerge } from 'tailwind-merge'
+import { getLinks } from '../http/get-links'
+import { Link } from '../components/link'
+import { exportLinks } from '../http/export-links'
+import { downloadUrl } from '../utils/download-url'
 
 export function Links() {
   const { register, handleSubmit, reset, watch, formState: { errors } } = useForm<CreateLinkInput>({
     resolver: zodResolver(createLinkInput)
   })
 
-  const { mutateAsync: createLinkFn, isPending } = useMutation({
+  const { mutateAsync: createLinkFn, isPending: isCreatingLink } = useMutation({
     mutationFn: createLink,
     onSuccess: () => {
       toast.success('Link criado com sucesso!')
@@ -29,6 +33,15 @@ export function Links() {
     }
   })
 
+  const { data: links } = useQuery({
+    queryKey: ['links'],
+    queryFn: getLinks
+  })
+
+  const { mutateAsync: exportLinksFn, isPending: isExportingLinks } = useMutation({
+    mutationFn: exportLinks
+  })
+
   async function handleCreateLink({ originalUrl, shortUrlSuffix }: CreateLinkInput) {
     await createLinkFn({
       originalUrl,
@@ -36,6 +49,12 @@ export function Links() {
     })
 
     reset()
+  }
+
+  async function handleExportLinks() {
+    const { fileUrl } = await exportLinksFn()
+
+    downloadUrl(fileUrl)
   }
 
   const { originalUrl, shortUrlSuffix } = watch()
@@ -46,7 +65,7 @@ export function Links() {
     <div className="min-h-screen flex flex-col items-center gap-6">
       <img src={logo} />
 
-      <form onSubmit={handleSubmit(handleCreateLink)} className='bg-gray-100 rounded-lg flex flex-col gap-5 p-6'>
+      <form onSubmit={handleSubmit(handleCreateLink)} className='bg-gray-100 rounded-lg flex flex-col gap-5 p-6 w-full'>
         <h1 className='text-lg font-bold leading-6'>Novo link</h1>
 
         <div className='flex flex-col gap-4'>
@@ -89,10 +108,32 @@ export function Links() {
           </div>
         </div>
 
-        <button type='submit' className='bg-blue-base text-white rounded-lg py-[15px] disabled:opacity-50' disabled={isSomeInputEmpty || isPending}>
-          {isPending ? 'Salvando...' : 'Salvar link'}
+        <button type='submit' className='bg-blue-base text-white rounded-lg py-[15px] disabled:opacity-50' disabled={isSomeInputEmpty || isCreatingLink}>
+          {isCreatingLink ? 'Salvando...' : 'Salvar link'}
         </button>
       </form>
+
+      <div className='bg-gray-100 rounded-lg flex flex-col gap-4 p-6 w-full'>
+        <div className='flex justify-between items-center'>
+          <h1 className='text-lg font-bold leading-6'>Meus links</h1>
+
+          <button className='bg-gray-200 text-gray-500 text-xs font-semibold leading-4 rounded-sm p-2 flex items-center gap-1.5 disabled:opacity-50' disabled={isExportingLinks} onClick={handleExportLinks}>
+            <DownloadSimpleIcon size={16} className='text-gray-600' />
+            Baixar CSV
+          </button>
+        </div>
+
+        <div className='space-y-3'>
+          {!!links && links.map(link => (
+            <Link
+              key={link.id}
+              originalUrl={link.originalUrl} 
+              shortUrlSuffix={link.shortUrlSuffix} 
+              accessCount={link.accessCount} 
+            />
+          ))}
+        </div>
+      </div>
     </div>
   )
 }
