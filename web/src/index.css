@@ -1,0 +1,7 @@
+@import "tailwindcss";
+
+@theme {
+  --font-open-sans: Open Sans, sans-serif;
+
+  --color-gray-100: #F9F9FB;
+}
